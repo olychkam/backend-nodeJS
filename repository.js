@@ -1,12 +1,25 @@
-let users = [{"id": 1, "name": "Sasha"},
-    {"id": 1, "name": "Artem"},
-    {"id": 1, "name": "Katya"}
-];
-const getUsers=()=>{
-    return users;
+const fs = require ("fs");
+const getUsers = () => {
+    let promise = new Promise ((resolve, reject) => {
+        fs.readFile ("db", function (err, buf) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve (JSON.parse(buf.toString()));  //????
+            }
+        });
+    });
+    return promise;
 }
-const addUser=(name)=>{
-    users.push ({name:name});
+const addUser = async (name) => {
+    let users = await getUsers();
+    users.push ({name: name});
+    return new Promise ((res, rej) => {
+        fs.writeFile ("db", JSON.stringify (users), (err) => {
+            if (err) rej(err);
+            res();
+        })
+    })
 };
-exports.getUsers=getUsers;
-exports.addUser=addUser;
+exports.getUsers = getUsers;
+exports.addUser = addUser;

@@ -1,12 +1,9 @@
 let http = require ('http');
-let {getUsers, addUser} = require ('./repository');
+let {usersController} = require ('./usersController');
 
 console.log (http);
-let users = [{"id": 1, "name": "Sasha"},
-    {"id": 1, "name": "Artem"},
-    {"id": 1, "name": "Katya"}
-];
-let cors = (res, req) => {
+
+let cors = (req, res) => {
     // Set CORS headers
     res.setHeader ('Access-Control-Allow-Origin', '*');
     res.setHeader ('Access-Control-Request-Method', '*');
@@ -20,24 +17,16 @@ let cors = (res, req) => {
     return false;
 }
 let server = http.createServer ((req, res) => {
-    if (cors (res, req)) return;
+    if (cors (req, res)) return;
     console.log ('some request');
     switch (req.url) {
-        case '/users':
-            if (req.method === "POST") {
-                addUser ('Anonim');
-                res.write (JSON.stringify ({success: true}));
-
-            } else {
-                res.write (JSON.stringify (getUsers()));
-                break;
-            }
+        case '/users':usersController(req, res);
+            break;
         case '/lessons':
             res.write (`LESSONS`)
             break;
         default:
             res.write (`PAGE NOT FOUND`)
     }
-    res.end ();
 });
 server.listen (7542)
